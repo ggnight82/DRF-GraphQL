@@ -11,4 +11,7 @@ class User(AbstractUser):
     def room_count(self):
         return self.rooms.count()
 
+    def __str__(self):
+        return self.username
+
     room_count.short_description = "Room Count"
