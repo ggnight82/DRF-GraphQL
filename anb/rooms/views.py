@@ -7,6 +7,6 @@ class ListRoomsView(ListAPIView):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
 
-class SeeRoomView(RetrieveAPIView):
+class DetailRoomView(RetrieveAPIView):
     queryset = Room.objects.all()
     serializer_class = DetailRoomSerializer
