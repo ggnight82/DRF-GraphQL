@@ -29,12 +29,27 @@ class CreateRoomSerializer(serializers.Serializer):
         return Room.objects.create(**validated_data)
     
     def validate(self, data):
-        check_in = data.get('check_in')
-        check_out = data.get('check_out')
-        if check_in == check_out :
-            raise serializers.ValidationError("Check your check in and check out time once again")
-        else :
-            return data
+        if not self.instance:
+            check_in = data.get("check_in")
+            check_out = data.get("check_out")
+            if check_in == check_out:
+                raise serializers.ValidationError("Not enough time between changes")
+        return data
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name')
+        instance.address = validated_data.get('address')
+        instance.price = validated_data.get('price')
+        instance.beds = validated_data.get('beds')
+        instance.lat = validated_data.get('lat')
+        instance.lng = validated_data.get('lng')
+        instance.bedrooms = validated_data.get('bedrooms')
+        instance.bathrooms = validated_data.get('bathrooms')
+        instance.check_in = validated_data.get('check_in')
+        instance.check_out = validated_data.get('check_out')
+        instance.instant_book = validated_data.get('instant_book')
+
+        return instance
+
 
 
 class DetailRoomSerializer(serializers.ModelSerializer):
