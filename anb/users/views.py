@@ -3,10 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from rooms.models import Room
 from .models import User
 from .serializers import ReadUserSerializer, CreateUserSerializer
 from rooms.serializers import RoomSerializer
-
+from django.shortcuts import get_object_or_404
 
 class MyProfileView(APIView):
 
@@ -47,4 +48,17 @@ class MyFavsView(APIView):
         serializer = RoomSerializer(user.favs.all(),many=True).data
         return Response(serializer)
     def put(self, request):
-        pass
+        user = request.user
+        id = request.data.get("id",None)
+        if id is not None:
+            try:
+                room = Room.objects.get(pk=id)
+                if room in user.favs.all():
+                    user.favs.remove(room)
+                else:
+                    user.favs.add(room)
+                return Response(data=RoomSerializer(user.favs.all(),many=True).data)
+            except Room.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
