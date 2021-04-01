@@ -58,6 +58,7 @@ class RoomView(APIView):
             return Response(data=serializer,status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
+            
     def delete(self, request,pk):
         room = self.get_room(pk)
         if room.user != request.user:
