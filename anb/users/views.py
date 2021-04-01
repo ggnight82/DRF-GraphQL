@@ -1,10 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from .models import User
 from .serializers import ReadUserSerializer, CreateUserSerializer
+from rooms.serializers import RoomSerializer
 
 
 class MyProfileView(APIView):
@@ -36,3 +37,14 @@ def user_detail(request,pk):
         return Response(data=ReadUserSerializer(user).data,status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+class MyFavsView(APIView):
+
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        user = request.user
+        serializer = RoomSerializer(user.favs.all(),many=True).data
+        return Response(serializer)
+    def put(self, request):
+        pass
