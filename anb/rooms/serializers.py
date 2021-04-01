@@ -2,19 +2,20 @@ from rest_framework import serializers
 from .models import Room
 from users.serializers import UserSerializers
 
-class ReadRoomSerializer(serializers.ModelSerializer):
 
-    user = UserSerializers()
-
-    class Meta:
-        model = Room
-        exclude = ("modified",)
-
-class CreateRoomSerializer(serializers.ModelSerializer):
+class RoomSerializer(serializers.ModelSerializer):
+    
+    user = UserSerializers
 
     class Meta:
         model = Room
-        exclude = ("user", "modified", "created")
+        exclude = ['modified']
+        read_only_fields = [
+            'user',
+            'id',
+            'created',
+            'updated'
+        ]
 
     
     def validate(self, data):
