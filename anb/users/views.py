@@ -1,3 +1,6 @@
+import jwt
+from django.contrib.auth import authenticate
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
@@ -41,16 +44,6 @@ class MyProfileView(APIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         return Response()
         
-
-
-@api_view(["GET"])
-def user_detail(request,pk):
-    try:
-        user = User.objects.get(pk=pk)
-        return Response(data=ReadUserSerializer(user).data,status=status.HTTP_200_OK)
-    except User.DoesNotExist:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
 class MyFavsView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -74,3 +67,27 @@ class MyFavsView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         else :
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def user_detail(request,pk):
+    try:
+        user = User.objects.get(pk=pk)
+        return Response(data=ReadUserSerializer(user).data,status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+@api_view(["POST"])
+def login(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+    if not username or not password:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    login_try_user = authenticate(username=username,password=password)
+    if login_try_user is not None:
+        encoded_jwt = jwt.encode(
+                {'id':login_try_user.pk},settings.SECRET_KEY,algorithm="HS256"
+            )
+        return Response(data={'token':encoded_jwt})
+    else:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
