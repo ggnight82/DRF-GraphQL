@@ -5,9 +5,21 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from rooms.models import Room
 from .models import User
-from .serializers import ReadUserSerializer, CreateUserSerializer
+from .serializers import NewAccountSerializers,UserSerializers,ReadUserSerializer, CreateUserSerializer
 from rooms.serializers import RoomSerializer
 from django.shortcuts import get_object_or_404
+
+
+class NewUserView(APIView):
+
+    def post(self, request):
+        serializer = NewAccountSerializers(data=request.data)
+        if serializer.is_valid():
+            new_account = serializer.save()
+            return Response(NewAccountSerializers(new_account).data)
+        else:
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+
 
 class MyProfileView(APIView):
 
@@ -26,7 +38,7 @@ class MyProfileView(APIView):
             serializer.save()
             return Response()
         else:
-            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         return Response()
         
 
