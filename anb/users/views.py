@@ -3,8 +3,9 @@ from django.contrib.auth import authenticate
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework import status
 from rooms.models import Room
 from .models import User
@@ -12,6 +13,17 @@ from .serializers import NewAccountSerializers,UserSerializers,ReadUserSerialize
 from rooms.serializers import RoomSerializer
 from django.shortcuts import get_object_or_404
 
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializers
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'list':
+            permission_classes = [IsAdminUser]
+        elif self.action == 'create' or self.action == 'retrieve':
+            permission_classes = [AllowAny]
+        return [permission() for permission in permission_classes]
 
 class NewUserView(APIView):
 
