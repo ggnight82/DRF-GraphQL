@@ -4,17 +4,20 @@ from rest_framework.decorators import api_view
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework import status
+from rest_framework import status, permissions
 from .models import Room
 from .serializers import RoomSerializer ,DetailRoomSerializer
 
 class RoomViewSet(ModelViewSet):
-    pass
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
 
-class hi():
-    pass
+    def get_permissions(self):
 
-
+        if self.action == "list" or self.action == "retrieve":
+            permission_classes = [permissions.AllowAny]
+        elif self.action == "create":
+            permission_classes = [permissions.IsAuthenticated]
 
 
 
