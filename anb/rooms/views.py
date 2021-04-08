@@ -7,6 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework import status, permissions
 from .models import Room
 from .serializers import RoomSerializer ,DetailRoomSerializer
+from .permissions import IsOwner
 
 class RoomViewSet(ModelViewSet):
     queryset = Room.objects.all()
@@ -18,6 +19,10 @@ class RoomViewSet(ModelViewSet):
             permission_classes = [permissions.AllowAny]
         elif self.action == "create":
             permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [IsOwner]
+        return [permission() for permission in permission_classes]
+
 
 
 
