@@ -20,7 +20,7 @@ class AccountSerializers(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "superhost",
-            "avatar"
+            "avatar",
         ]
 
     def create(self,validated_data):
@@ -42,7 +42,7 @@ class UserSerializers(serializers.ModelSerializer):
             "email",
             "avatar",
             "superhost",
-
+            "favs"
         )
 
 

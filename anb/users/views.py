@@ -22,7 +22,7 @@ class UserViewSet(ModelViewSet):
         permission_classes = []
         if self.action == 'list':
             permission_classes = [IsAdminUser]
-        elif self.action == 'create' or self.action == 'retrieve':
+        elif self.action == 'create' or self.action == 'retrieve' or self.action == 'favs':
             permission_classes = [AllowAny]
         else:
             permission_classes = [IsSelf]
@@ -42,6 +42,30 @@ class UserViewSet(ModelViewSet):
             return Response(data={'token':encoded_jwt,'id':login_try_user.pk})
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(detail=True)
+    def favs(self, request,pk):
+        user = self.get_object()
+        serializer = RoomSerializer(user.favs.all(),many=True).data
+        return Response(serializer)
+
+    @favs.mapping.put
+    def toggle_favs(self, request, pk):
+        user = self.get_object()
+        serializer = RoomSerializer(user)
+        id = request.data.get("id",None)
+        if id is not None:
+            try:
+                room = Room.objects.get(pk=id)
+                if room in user.favs.all():
+                    user.favs.remove(room)
+                else:
+                    user.favs.add(room)
+                return Response(data=RoomSerializer(user.favs.all(),many=True).data)
+            except Room.DoesNotExist:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        else :
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class NewUserView(APIView):
 
