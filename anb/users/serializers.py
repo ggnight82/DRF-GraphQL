@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import User
 
-class NewAccountSerializers(serializers.ModelSerializer):
+class AccountSerializers(serializers.ModelSerializer):
 
     password = serializers.CharField(write_only=True)
 
@@ -15,7 +15,7 @@ class NewAccountSerializers(serializers.ModelSerializer):
             "email",
             "avatar",
             "superhost",
-            "password"
+            "password",
         ]
         read_only_fields = [
             "id",
@@ -42,6 +42,7 @@ class UserSerializers(serializers.ModelSerializer):
             "email",
             "avatar",
             "superhost",
+
         )
 
 
